@@ -1,0 +1,39 @@
+version: "3.2"
+
+services:
+  web_php:
+    container_name: nexis_web_php
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    environment:
+      - DB_MYSQL_HOST=db_mysql
+      - DB_MYSQL_NAME=go_db
+      - DB_MYSQL_USER=go_db
+    volumes:
+      - .:/home/www
+    depends_on:
+      - "db_mysql"
+    links:
+      - db_mysql
+  db_mysql:
+    container_name: nexis_db_mysql
+    restart: unless-stopped
+    image: mysql:latest
+    tty: true
+    ports:
+      - "3307:3306"
+    cap_add:
+      - SYS_NICE  # CAP_SYS_NICE
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=nexis_db
+      - MYSQL_USER=nexis_db
+      - MYSQL_PASSWORD=root
+      - MYSQL_ROOT_PASSWORD=root
+    command: "mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci"
+volumes:
+  mysql-data:
+    external:
+      name: nexis_db_mysql
