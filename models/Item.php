@@ -22,7 +22,6 @@ class Item extends \yii\db\ActiveRecord
 
     public function beforeSave($insert)
     {
-        //echo $this->getOldAttribute('user_id'). ' '.$this->user_id;die;
         if(!$insert && $this->isAttributeChanged('user_id')) {
             TradeHistory::create($this->id,
                 $this->getOldAttribute('user_id'),
